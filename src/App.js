@@ -30,7 +30,7 @@ function App() {
         <Route exact path='/edit/:id' element={<Edit />} />
         <Route exact path='/add' element={<Add />} />
         <Route exact path='/birthday' element={<Birthday />} />
-        <Route path="/*" element={<Error />} />
+        <Route path="/404" element={<Error />} />
       </Routes>
     </div>
   );
