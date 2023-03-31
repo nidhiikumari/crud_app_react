@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import {
   Routes,
   Route,
-  useNavigate
+  useNavigate,
+  Navigate
 } from 'react-router-dom';
 import Signin from './components/auth/signin';
 import Signup from './components/auth/signup';
@@ -31,6 +32,7 @@ function App() {
         <Route exact path='/add' element={<Add />} />
         <Route exact path='/birthday' element={<Birthday />} />
         <Route path="/404" element={<Error />} />
+        <Route path="*" element={<Navigate to="/404" />} />
       </Routes>
     </div>
   );
