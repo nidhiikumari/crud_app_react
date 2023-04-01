@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
 import {
   Layout,
   Modal,
@@ -7,40 +6,59 @@ import {
   Space,
   Table,
   Tooltip,
-  Button
+  Button,
+  message
 } from 'antd';
-import { LoadingOutlined, DeleteTwoTone, EyeTwoTone, EditTwoTone } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { DeleteTwoTone, EyeTwoTone, EditTwoTone, UserAddOutlined } from '@ant-design/icons';
 import css from '../common/css';
 import Appbar from '../common/header';
+import Edit from './edit';
+import Add from './add';
+import Users from './users';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 const Index = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const users = useSelector(state => state);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalViewOpen, setIsModalViewOpen] = useState(false);
   const [userDetails, setUserDetails] = useState([]);
+  const [editData, setEditData] = useState({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [initialState, setInitialState] = useState({});
   const [id, setId] = useState('');
 
+
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Users Deleted Succesfully',
+    });
+  };
+
+  // delete popup
+  const handleOk = () => {
+    var index = Users.map(function (e) {
+      return e.id
+    }).indexOf(id);
+    Users.splice(index, 1);
+    success();
+    setTimeout(() => {
+      setIsModalOpen(false);
+    }, 2000)
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const showModal = (deleteId) => {
     setIsModalOpen(true);
     setId(deleteId);
   };
 
-  const handleOk = () => {
-    dispatch({ type: 'DELETE_USER', payload: id });
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const handleEdit = (data) => {
-    navigate(`/edit/${data.id}`, { state: { editData: data.id } });
-  };
+  console.log(Users, 'Users');
+  // details popup
   const showModalView = (data) => {
     setIsModalViewOpen(true);
     setUserDetails([data]);
@@ -51,6 +69,30 @@ const Index = () => {
   const handleViewCancel = () => {
     setIsModalViewOpen(false);
   };
+
+  // edit popup
+  const handleEdit = (data) => {
+    setEditData(data);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // add pupup
+  const handleAdd = () => {
+    setIsAddModalOpen(true);
+    setInitialState({
+      name: '',
+      email: '',
+      phone: ''
+    });
+  }
+
+  const handleAddCancel = () => {
+    setIsAddModalOpen(false);
+  }
 
   const columns = [
     {
@@ -82,6 +124,9 @@ const Index = () => {
           <Tooltip title="Edit">
             <Button style={css.icons} onClick={() => handleEdit(row)}><EditTwoTone /></Button>
           </Tooltip>
+          {/* <Tooltip title="Add">
+            <Button style={css.icons} onClick={() => handleAdd()}><UserAddOutlined /></Button>
+          </Tooltip> */}
         </Space>
       ),
     }
@@ -89,6 +134,7 @@ const Index = () => {
 
   return (
     <div style={css.root}>
+      {contextHolder}
       <Layout>
         <Appbar />
       </Layout>
@@ -98,7 +144,7 @@ const Index = () => {
       >
         <Table
           columns={columns}
-          dataSource={users.map((row) => ({
+          dataSource={Users.map((row) => ({
             Name: row.name,
             Email: row.email,
             id: row.id,
@@ -109,6 +155,7 @@ const Index = () => {
           pagination={{ pageSize: 12 }}
         />
       </Content>
+      <Button style={css.addBtn} onClick={() => handleAdd()}>Add User<UserAddOutlined /></Button>
       <Modal
         title="Delete"
         open={isModalOpen}
@@ -135,6 +182,28 @@ const Index = () => {
             </>
           ))
         }
+      </Modal>
+
+      <Modal
+        title="Update User"
+        open={isEditModalOpen}
+        onCancel={handleEditCancel}
+        footer={null}
+      >
+        <Edit editData={editData} setIsEditModalOpen={setIsEditModalOpen} />
+      </Modal>
+
+      <Modal
+        title="Add User"
+        open={isAddModalOpen}
+        onCancel={handleAddCancel}
+        footer={null}
+      >
+        <Add
+          setIsAddModalOpen={setIsAddModalOpen}
+          isAddModalOpen={isAddModalOpen}
+          initialState={initialState}
+        />
       </Modal>
     </div>
   )

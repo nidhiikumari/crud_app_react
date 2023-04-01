@@ -34,15 +34,23 @@ const crudCss = {
   // -------------ADD USER--------------------
   addUserBox: {
     color: '#fff',
-    width: '50%',
+    // width: '50%',
     display: 'flex',
     flexDirection: 'column',
-    padding: '12px 205px',
+    padding: '12px 5px',
     justifyContent: 'flex-start',
     margin: 'auto',
     marginTop: 23,
     borderRadius: 9,
     textAlign: 'center'
+  },
+  addBtn: {
+   textAlign: 'center',
+   display: 'flex',
+   justifyContent:'center',
+   alignItems: 'center',
+   marginLeft: '13rem',
+   marginTop: 19
   },
   userInput: {
     marginTop: '6px',

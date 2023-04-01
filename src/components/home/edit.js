@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
 import { Layout, Input, Typography, message } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
 import css from '../common/css';
-import Appbar from '../common/header';
+import Users from './users';
 
 const { Title } = Typography;
 
-const initialState = {
-  name: '',
-  email: '',
-  phone: ''
-};
+const Edit = ({ editData, setIsEditModalOpen }) => {
 
-const Edit = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { state } = useLocation();
+  const initialState = {
+    name: editData.Name,
+    email: editData.Email,
+    phone: editData.Phone
+  };
+
   const [formValue, setFormValue] = useState(initialState);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const user = useSelector((state) => state);
+  var index = Users.map(function (e) {
+    return e.id
+  }).indexOf(editData.id);
 
   const success = () => {
     messageApi.open({
@@ -32,19 +30,14 @@ const Edit = () => {
   const { name, email, phone } = formValue;
   const submitHandle = (e) => {
     e.preventDefault();
+    let a = Users[index];
     if (name && email && phone) {
-
-      const data = {
-        id: parseInt(state.editData),
-        name,
-        email,
-        phone,
-      };
-
-      dispatch({ type: "UPDATE_USER", payload: data });
+      a.name = name;
+      a.email = email;
+      a.phone = phone;
       success();
       setTimeout(() => {
-        navigate('/');
+        setIsEditModalOpen(false);
       }, 2000)
     }
   };
@@ -53,18 +46,11 @@ const Edit = () => {
     let { name, value } = e.target;
     setFormValue({ ...formValue, [name]: value });
   }
-  useEffect(() => {
-    if (state.editData) {
-      const singleUser = user.find((data) => data.id === parseInt(state.editData));
-      setFormValue({ ...singleUser })
-    }
-  }, [state.editData, user]);
 
   return (
     <div>
-      <Appbar />
+      {contextHolder}
       <Layout style={css.addUserBox}>
-        <Title>Edit User</Title>
         <form onSubmit={submitHandle}>
           <Title style={css.inputTitle} level={5}>Username</Title>
           <Input

@@ -1,24 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import { Layout, Input, Typography, message } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
 import css from '../common/css';
-import Appbar from '../common/header';
+import Users from './users'
 
 const { Title } = Typography;
 
-const Add = () => {
-  const initialState = {
-    name: '',
-    email: '',
-    phone: ''
-  };
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+const Add = ({ setIsAddModalOpen, isAddModalOpen, initialState }) => {
   const [formValue, setFormValue] = useState(initialState);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const user  = useSelector((state) => state);
 
   const success = () => {
     messageApi.open({
@@ -26,23 +15,18 @@ const Add = () => {
       content: 'Added Successfully',
     });
   };
+  console.log(formValue);
+  console.log(initialState, 'initialState')
 
   const { name, email, phone } = formValue;
-
-  const Data = {
-    id: user[user.length - 1].id + 1,
-    name,
-    email,
-    phone
-  }
 
   const submitHandle = (e) => {
     e.preventDefault();
     if (name && email && phone) {
-      dispatch({ type: "ADD_USER", payload: Data });
+      Users.push({ ...formValue, id: Users[Users.length - 1].id + 1 })
       success();
       setTimeout(() => {
-        navigate('/');
+        setIsAddModalOpen(false);
       }, 2000);
     }
   };
@@ -50,13 +34,17 @@ const Add = () => {
   const onInputChange = (e) => {
     let { name, value } = e.target;
     setFormValue({ ...formValue, [name]: value });
-  }
+  };
+  console.log(isAddModalOpen, 'isAddModalOpen');
+
+  useEffect(() => {
+    setFormValue(initialState);
+  }, [initialState]);
 
   return (
     <div>
-      <Appbar />
+      {contextHolder}
       <Layout style={css.addUserBox}>
-        <Title>Add User</Title>
         <form onSubmit={submitHandle}>
           <Title style={css.inputTitle} level={5}>Username</Title>
           <Input
